@@ -1,0 +1,39 @@
+.card-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #95dada;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: 2px 0 10px gray;
+  padding: 25px;
+  cursor: pointer;
+  -moz-osx-font-smoothing: grayscale;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  transition: transform 0.25s ease-out;
+  position: relative;
+}
+
+.card-container p {
+  margin-top: 0;
+}
+
+.card-container:hover {
+  transform: scale(1.01);
+}
+
+.padding-added {
+  padding: 0 27px;
+}
+
+.card-container i {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: xx-large;
+  transition: top 0.1s ease-out;
+}
+.card-container i:hover {
+  transform: scale(1.1);
+  color: tomato;
+}
