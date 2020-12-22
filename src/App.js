@@ -96,10 +96,21 @@ class App extends Component {
           placeholder="Search Monster"
           handleChange={this.handleChange}
         />
-        <CardList
-          clicked={(ev, id) => this.cardClickHandler(ev, id)}
-          monsters={this.state.showFavs ? myFav : filteredMonsters}
-        />
+        {filteredMonsters.length > 0 ? (
+          <CardList
+            clicked={(ev, id) => this.cardClickHandler(ev, id)}
+            monsters={
+              this.state.showFavs
+                ? myFav
+                : this.state.searchField.length
+                ? filteredMonsters
+                : monsters
+            }
+            myFav={favourites}
+          />
+        ) : (
+          <p className="error">Username Doesn't Exist</p>
+        )}
       </div>
     );
   }

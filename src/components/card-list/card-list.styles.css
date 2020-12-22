@@ -11,6 +11,17 @@
   box-sizing: border-box;
 }
 
+.hide {
+  opacity: 0;
+}
+
+p.error {
+  text-align: center;
+  font-size: x-large;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
 @media (max-width: 1200px) {
   .card-list {
     grid-template-columns: 1fr 1fr 1fr;
