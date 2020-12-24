@@ -1,25 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import "./navBar.css";
-function navBar(props) {
-  let makeActive;
+function NavBar({ navItems, clicked }) {
+  const [active, setActive] = useState("Monsters");
   return (
     <div className="nav-bar">
-      {props.navItems.map((navItem, id) => {
-        switch (id) {
-          case 0:
-            makeActive = props.active ? null : "active";
-            break;
-          case 1:
-            makeActive = props.active ? "active" : null;
-            break;
-          default:
-            makeActive = null;
-        }
+      {navItems.map((navItem, id) => {
         return (
           <span
-            className={makeActive}
+            className={active === navItem ? "active" : null}
             key={id}
-            onClick={() => props.clicked(id)}
+            onClick={() => {
+              clicked(id);
+              setActive(navItem);
+            }}
           >
             {navItem}
           </span>
@@ -29,4 +22,4 @@ function navBar(props) {
   );
 }
 
-export default navBar;
+export default NavBar;

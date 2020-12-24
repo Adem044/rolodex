@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import NavBar from "./components/navBar/navBar";
 import { CardList } from "./components/card-list/card-list";
 import { SearchBox } from "./components/search-box/search-box";
+import DropDownMenu from "./components/dropDownMenu/dropDownMenu";
 import "./App.css";
 
 class App extends Component {
@@ -14,6 +15,7 @@ class App extends Component {
       clickedImg: 0,
       favourites: [],
       showFavs: false,
+      sortBy: "default",
     };
   }
 
@@ -58,20 +60,35 @@ class App extends Component {
   };
 
   navItemHandler = (id) => {
-    if (id) {
-      this.setState({ showFavs: true });
-    } else {
-      this.setState({ showFavs: false });
-    }
+    this.setState({ showFavs: id ? true : false });
+  };
+
+  handleSelected = (selected) => {
+    this.setState({ sortBy: selected });
   };
 
   render() {
-    const { monsters, searchField, favourites } = this.state;
-
-    const filteredMonsters = monsters.filter((monster) =>
+    let monsters = [...this.state.monsters];
+    const { showFavs, searchField, favourites, sortBy } = this.state;
+    switch (sortBy) {
+      case "a-z":
+        monsters = monsters.sort((a, b) =>
+          a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+        );
+        break;
+      case "z-a":
+        monsters = monsters.sort((a, b) =>
+          b.name > a.name ? 1 : a.name > b.name ? -1 : 0
+        );
+        break;
+      default:
+        monsters = this.state.monsters;
+    }
+    const myFav = monsters.filter((monster) => favourites.includes(monster.id));
+    const whereToSearch = showFavs ? myFav : monsters;
+    const filteredMonsters = whereToSearch.filter((monster) =>
       monster.name.toLowerCase().includes(searchField.toLowerCase())
     );
-    const myFav = monsters.filter((monster) => favourites.includes(monster.id));
     return (
       <div className="App">
         {this.state.showFull && (
@@ -84,28 +101,20 @@ class App extends Component {
         )}
         <NavBar
           navItems={
-            this.state.favourites.length
-              ? ["Monsters", "Favourites"]
-              : ["Monsters"]
+            favourites.length ? ["Monsters", "Favourites"] : ["Monsters"]
           }
           clicked={(id) => this.navItemHandler(id)}
-          active={this.state.showFavs}
         />
         <h1>Monster Rolodex </h1>
         <SearchBox
           placeholder="Search Monster"
           handleChange={this.handleChange}
         />
+        <DropDownMenu selected={(val) => this.handleSelected(val)} />
         {filteredMonsters.length > 0 ? (
           <CardList
             clicked={(ev, id) => this.cardClickHandler(ev, id)}
-            monsters={
-              this.state.showFavs
-                ? myFav
-                : this.state.searchField.length
-                ? filteredMonsters
-                : monsters
-            }
+            monsters={filteredMonsters}
             myFav={favourites}
           />
         ) : (
