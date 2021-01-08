@@ -16,6 +16,9 @@ class App extends Component {
       favourites: [],
       showFavs: false,
       sortBy: "default",
+      notifications: [],
+      recent: [],
+      showDrop: false,
     };
   }
 
@@ -37,8 +40,12 @@ class App extends Component {
     if (!ev.target.className.includes("fa-bookmark")) {
       this.setState({ showFull: true, clickedImg: id });
     } else {
+      this.setState((prevState) => prevState.recent.push(id));
       if (!this.state.favourites.includes(id)) {
         this.setState((prevState) => prevState.favourites.push(id));
+        this.setState((prevState) =>
+          prevState.notifications.push({ id, type: "added" })
+        );
       } else {
         this.setState(
           (prevState) =>
@@ -50,6 +57,9 @@ class App extends Component {
             this.state.favourites.length
               ? null
               : this.setState({ showFavs: false })
+        );
+        this.setState((prevState) =>
+          prevState.notifications.push({ id, type: "removed" })
         );
       }
     }
@@ -66,10 +76,27 @@ class App extends Component {
   handleSelected = (selected) => {
     this.setState({ sortBy: selected });
   };
+  handleNotif = () => {
+    this.setState({ recent: [] });
+    this.setState((prev) => {
+      return {
+        ...prev,
+        showDrop: !prev.showDrop,
+      };
+    });
+  };
 
   render() {
     let monsters = [...this.state.monsters];
-    const { showFavs, searchField, favourites, sortBy } = this.state;
+    const {
+      showFavs,
+      searchField,
+      favourites,
+      sortBy,
+      notifications,
+      recent,
+      showDrop,
+    } = this.state;
     switch (sortBy) {
       case "a-z":
         monsters = monsters.sort((a, b) =>
@@ -84,13 +111,31 @@ class App extends Component {
       default:
         monsters = this.state.monsters;
     }
+    const notifs = notifications.reduce((acc, cur) => {
+      for (let monster of monsters) {
+        if (monster.id === cur.id) {
+          acc.unshift({ ...monster, type: cur.type });
+        }
+      }
+      return acc;
+    }, []);
     const myFav = monsters.filter((monster) => favourites.includes(monster.id));
     const whereToSearch = showFavs ? myFav : monsters;
     const filteredMonsters = whereToSearch.filter((monster) =>
       monster.name.toLowerCase().includes(searchField.toLowerCase())
     );
+    document.addEventListener("scroll", () => {
+      if (this.state.showDrop) this.setState({ showDrop: false });
+    });
     return (
-      <div className="App">
+      <div
+        className="App"
+        onClick={(ev) => {
+          if (!ev.target.closest(".fa-bell")) {
+            this.setState({ showDrop: false });
+          }
+        }}
+      >
         {this.state.showFull && (
           <div className="show-full" onClick={this.closeFull}>
             <img
@@ -104,6 +149,10 @@ class App extends Component {
             favourites.length ? ["Monsters", "Favourites"] : ["Monsters"]
           }
           clicked={(id) => this.navItemHandler(id)}
+          added={notifs}
+          handleNotif={this.handleNotif}
+          recentNotif={recent}
+          showDrop={showDrop}
         />
         <h1>Monster Rolodex </h1>
         <SearchBox
