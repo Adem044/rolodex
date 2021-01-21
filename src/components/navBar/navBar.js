@@ -1,66 +1,67 @@
 import React, { useState } from "react";
 import "./navBar.css";
+import { Link, useLocation } from "react-router-dom";
+import Notifications from "../notifications/Notifications";
+
 function NavBar({
   navItems,
   clicked,
-  added,
   handleNotif,
   recentNotif,
-  showDrop,
+  deleteHandler,
+  toggleMode,
+  mode,
 }) {
   const [active, setActive] = useState("Monsters");
-  const [showDropDown, setShowDropDown] = useState(false);
+  const location = useLocation();
+
+  if (location.pathname !== "/Favourites") {
+    if (active !== "Monsters") {
+      setActive("Monsters");
+    }
+  }
+  if (location.pathname === "/Favourites") {
+    if (active !== "Favourites") {
+      setActive("Favourites");
+    }
+  }
+
+  const navBarClassName = mode === "light" ? "nav-bar" : "nav-bar dark";
   return (
-    <div className="nav-bar">
+    <div className={navBarClassName}>
       {navItems.map((navItem, id) => {
         return (
-          <span
+          <Link
             className={active === navItem ? "active" : null}
-            key={id}
+            to={`/${navItem}`}
             onClick={() => {
               clicked(id);
               setActive(navItem);
             }}
+            key={id}
           >
             {navItem}
-          </span>
+          </Link>
         );
       })}
       <i
         data-notifs-count={recentNotif.length}
         className={`${!recentNotif.length ? "far" : "fas"} fa-bell`}
-        onClick={() => {
-          setShowDropDown(!showDropDown);
-          handleNotif();
+        onClick={(ev) => {
+          handleNotif(ev.target.classList.contains("fa-bell"));
         }}
       >
-        <div className="notifications" hidden={!showDrop}>
-          <h4>
-            Notifications <span>{added.length}</span>
-          </h4>
-          {added.map((fav, id) => (
-            <div
-              className="notif"
-              key={id}
-              style={{
-                backgroundColor:
-                  fav.type === "removed"
-                    ? "tomato"
-                    : "rgba(179, 202, 145, 0.787)",
-              }}
-            >
-              <img
-                alt="monster"
-                src={`https://robohash.org/${fav.id}?set=set2&size=180x180`}
-              />
-              <div>
-                <h5>{fav.name}</h5>
-                <h6>{fav.email}</h6>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Notifications deleteHandler={deleteHandler} mode={mode} />
       </i>
+      <div className="toggle-mode">
+        <i
+          className={`${mode === "light" ? "far fa-sun" : "fas fa-moon"} mode`}
+          onClick={toggleMode}
+        ></i>
+        <span className="toggle">
+          {mode === "light" ? "Light Mode" : "Dark Mode"}
+        </span>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,29 @@
+.full-card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  align-items: center;
+  grid-column: span 4;
+  background-color: thistle;
+  border-radius: 5%;
+  width: 60%;
+  align-self: center;
+  justify-self: center;
+  transition: all 0.2s linear;
+}
+.full-card-container:hover {
+  box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.3), 1px -1px 5px rgba(0, 0, 0, 0.3);
+  background-color: rgb(230, 204, 230);
+}
+.infos h3::first-letter {
+  text-transform: capitalize;
+}
+
+.infos span {
+  font-weight: lighter;
+}
+
+.infos span::before {
+  content: ": ";
+}

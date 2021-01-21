@@ -1,0 +1,102 @@
+.notifications {
+  position: absolute;
+  height: 200px;
+  width: 200px;
+  bottom: -200px;
+  left: 0;
+  background-color: #dfe0e996;
+  overflow-y: auto;
+  border: 3px solid tan;
+  border-top: 0;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 5px gray;
+}
+
+.dark-notifications {
+  background-color: #39393a96;
+  border-color: rgb(61, 57, 51);
+}
+
+.dark-notifications h4 {
+  color: white;
+  background-color: #373b30 !important;
+}
+
+.notifications h4 {
+  font-size: large;
+  margin: 0;
+  padding: 10px 0;
+  text-align: center;
+  background-color: #93a178;
+  position: fixed;
+  z-index: 1;
+  width: 200px;
+}
+.notifications h4 span {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  width: 25px;
+  margin-left: 5px;
+  border-radius: 50%;
+  font-size: large;
+  text-align: center;
+  background-color: tomato;
+}
+.notifications .notif:first-of-type {
+  margin-top: 38px;
+}
+.notif {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  column-gap: 5px;
+  border-bottom: 2px solid gray;
+}
+.notif:hover {
+  filter: brightness(90%);
+}
+.notif img {
+  width: 30%;
+  border-radius: 50%;
+  background-color: rgba(245, 245, 245, 0.219);
+}
+
+.notif h5 {
+  font-size: medium;
+  margin: 0;
+  margin-bottom: 3px;
+  text-align: left;
+}
+.notif h6 {
+  font-size: small;
+  margin: 0;
+  text-align: left;
+  font-weight: lighter;
+  word-break: break-all;
+}
+.notif h5 span {
+  font-size: x-small;
+  padding: 0;
+  margin: 0;
+}
+
+.notifications h4 .delete-all {
+  background-color: turquoise;
+  color: tomato;
+  font-family: cursive;
+}
+
+.dark-notifications .notif div {
+  color: white;
+}
+
+.dark-notifications h4 .delete-all {
+  background-color: rgb(16, 78, 72);
+}
+
+@media (max-width: 830px) {
+  .notifications {
+    left: -190px;
+  }
+}

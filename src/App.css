@@ -3,23 +3,14 @@ body {
   background: linear-gradient(to left, #93a178c5, #dfe0e9);
 }
 
-.show-full {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.app-dark {
+  background: linear-gradient(to left, #363b2dc5, #595a5d);
+  min-height: 100vh;
+  padding-bottom: 10px;
 }
-
-.show-full img {
-  height: 60%;
+.app-dark h1 {
+  color: #03bbb2;
 }
-
 h1 {
   font-family: "Bigelow Rules";
   font-size: 72px;

@@ -1,9 +1,20 @@
 import React, { Component } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+
 import NavBar from "./components/navBar/navBar";
+import FullSize from "./components/fullSize/FullSize";
 import { CardList } from "./components/card-list/card-list";
+import FullCardInfo from "./components/card/fullCardInfo";
 import { SearchBox } from "./components/search-box/search-box";
 import DropDownMenu from "./components/dropDownMenu/dropDownMenu";
 import "./App.css";
+
+export const NotifsContext = React.createContext({
+  added: [],
+  showDrop: false,
+});
+
+export const ModeContext = React.createContext("");
 
 class App extends Component {
   constructor() {
@@ -13,16 +24,25 @@ class App extends Component {
       searchField: "",
       showFull: false,
       clickedImg: 0,
-      favourites: [],
+      favourites: JSON.parse(window.localStorage.getItem("favs")) || [],
       showFavs: false,
       sortBy: "default",
       notifications: [],
       recent: [],
       showDrop: false,
+      mode: "light",
     };
   }
 
   componentDidMount() {
+    document.addEventListener("scroll", () => {
+      if (this.state.showDrop) this.setState({ showDrop: false });
+    });
+    document.querySelector(".App").onclick = (ev) => {
+      if (!ev.target.closest(".fa-bell")) {
+        this.setState({ showDrop: false });
+      }
+    };
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((response) => response.json())
       .then((user) =>
@@ -37,12 +57,17 @@ class App extends Component {
   };
 
   cardClickHandler = (ev, id) => {
-    if (!ev.target.className.includes("fa-bookmark")) {
+    if (ev.target.tagName === "IMG") {
       this.setState({ showFull: true, clickedImg: id });
-    } else {
+    } else if (ev.target.className.includes("fa-bookmark")) {
       this.setState((prevState) => prevState.recent.push(id));
       if (!this.state.favourites.includes(id)) {
-        this.setState((prevState) => prevState.favourites.push(id));
+        this.setState(
+          (prevState) => prevState.favourites.push(id),
+          () => {
+            window.localStorage.setItem("favs", `[${this.state.favourites}]`);
+          }
+        );
         this.setState((prevState) =>
           prevState.notifications.push({ id, type: "added" })
         );
@@ -53,10 +78,12 @@ class App extends Component {
               prevState.favourites.findIndex((fav) => fav === id),
               1
             ),
-          () =>
-            this.state.favourites.length
+          () => {
+            window.localStorage.setItem("favs", `[${this.state.favourites}]`);
+            return this.state.favourites.length
               ? null
-              : this.setState({ showFavs: false })
+              : this.setState({ showFavs: false });
+          }
         );
         this.setState((prevState) =>
           prevState.notifications.push({ id, type: "removed" })
@@ -76,16 +103,25 @@ class App extends Component {
   handleSelected = (selected) => {
     this.setState({ sortBy: selected });
   };
-  handleNotif = () => {
+  handleNotif = (bool) => {
     this.setState({ recent: [] });
-    this.setState((prev) => {
-      return {
-        ...prev,
-        showDrop: !prev.showDrop,
-      };
-    });
+    if (bool)
+      this.setState((prev) => {
+        return {
+          ...prev,
+          showDrop: !prev.showDrop,
+        };
+      });
+  };
+  handleDelete = () => {
+    this.setState({ notifications: [] });
   };
 
+  toggleMode = () => {
+    this.setState({
+      mode: this.state.mode === "light" ? "dark" : "light",
+    });
+  };
   render() {
     let monsters = [...this.state.monsters];
     const {
@@ -96,6 +132,8 @@ class App extends Component {
       notifications,
       recent,
       showDrop,
+      clickedImg,
+      mode,
     } = this.state;
     switch (sortBy) {
       case "a-z":
@@ -124,51 +162,58 @@ class App extends Component {
     const filteredMonsters = whereToSearch.filter((monster) =>
       monster.name.toLowerCase().includes(searchField.toLowerCase())
     );
-    document.addEventListener("scroll", () => {
-      if (this.state.showDrop) this.setState({ showDrop: false });
-    });
+    const appMode = mode === "light" ? "App" : "App app-dark";
     return (
-      <div
-        className="App"
-        onClick={(ev) => {
-          if (!ev.target.closest(".fa-bell")) {
-            this.setState({ showDrop: false });
-          }
-        }}
-      >
-        {this.state.showFull && (
-          <div className="show-full" onClick={this.closeFull}>
-            <img
-              alt="monster"
-              src={`https://robohash.org/${this.state.clickedImg}?set=set2&size=180x180`}
+      <div className={appMode}>
+        <BrowserRouter>
+          {this.state.showFull && (
+            <FullSize closeFull={this.closeFull} clickedImg={clickedImg} />
+          )}
+          <NotifsContext.Provider value={{ added: notifs, showDrop }}>
+            <NavBar
+              navItems={["Monsters", "Favourites"]}
+              clicked={(id) => this.navItemHandler(id)}
+              handleNotif={(bool) => this.handleNotif(bool)}
+              recentNotif={recent}
+              deleteHandler={this.handleDelete}
+              mode={mode}
+              toggleMode={this.toggleMode}
             />
-          </div>
-        )}
-        <NavBar
-          navItems={
-            favourites.length ? ["Monsters", "Favourites"] : ["Monsters"]
-          }
-          clicked={(id) => this.navItemHandler(id)}
-          added={notifs}
-          handleNotif={this.handleNotif}
-          recentNotif={recent}
-          showDrop={showDrop}
-        />
-        <h1>Monster Rolodex </h1>
-        <SearchBox
-          placeholder="Search Monster"
-          handleChange={this.handleChange}
-        />
-        <DropDownMenu selected={(val) => this.handleSelected(val)} />
-        {filteredMonsters.length > 0 ? (
-          <CardList
-            clicked={(ev, id) => this.cardClickHandler(ev, id)}
-            monsters={filteredMonsters}
-            myFav={favourites}
+          </NotifsContext.Provider>
+          <h1>Monster Rolodex</h1>
+          <SearchBox
+            placeholder="Search Monster"
+            handleChange={this.handleChange}
           />
-        ) : (
-          <p className="error">Username Doesn't Exist</p>
-        )}
+          <DropDownMenu selected={(val) => this.handleSelected(val)} />
+          <Switch>
+            <Route path="/Monsters/:id">
+              <FullCardInfo monster={monsters} />
+            </Route>
+            <Route path="/Favourites">
+              <ModeContext.Provider value={mode}>
+                <CardList
+                  clicked={(ev, id) => this.cardClickHandler(ev, id)}
+                  monsters={myFav}
+                  myFav={favourites}
+                />
+              </ModeContext.Provider>
+            </Route>
+            <Route path="/">
+              {filteredMonsters.length > 0 ? (
+                <ModeContext.Provider value={mode}>
+                  <CardList
+                    clicked={(ev, id) => this.cardClickHandler(ev, id)}
+                    monsters={filteredMonsters}
+                    myFav={favourites}
+                  />
+                </ModeContext.Provider>
+              ) : (
+                <p className="error">Username Doesn't Exist</p>
+              )}
+            </Route>
+          </Switch>
+        </BrowserRouter>
       </div>
     );
   }
