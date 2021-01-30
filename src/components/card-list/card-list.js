@@ -6,7 +6,7 @@ import "./card-list.styles.css";
 
 export const CardList = ({ myFav, monsters, clicked }) => {
   const [showDetails, setShowDetails] = useState(0);
-  let monst = monsters.filter((mon) => mon.id === showDetails);
+  let monst = monsters.find((mon) => mon.id === showDetails);
   const location = useLocation();
   return (location.pathname === "/Favourites" && myFav.length) ||
     location.pathname !== "/Favourites" ? (
@@ -21,7 +21,7 @@ export const CardList = ({ myFav, monsters, clicked }) => {
             <h2 key="h1" className="close" onClick={() => setShowDetails(0)}>
               X
             </h2>,
-            <FullCardInfo key="card" monster={monst[0]} />,
+            <FullCardInfo key="card" monster={monst} />,
           ]
         : monsters.map((monster) => {
             return (

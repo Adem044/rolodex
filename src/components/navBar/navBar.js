@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import "./navBar.css";
 import { Link, useLocation } from "react-router-dom";
+import styled from "styled-components";
+import "./navBar.css";
 import Notifications from "../notifications/Notifications";
 
 function NavBar({
@@ -44,7 +45,7 @@ function NavBar({
           </Link>
         );
       })}
-      <i
+      <Icon
         data-notifs-count={recentNotif.length}
         className={`${!recentNotif.length ? "far" : "fas"} fa-bell`}
         onClick={(ev) => {
@@ -52,7 +53,7 @@ function NavBar({
         }}
       >
         <Notifications deleteHandler={deleteHandler} mode={mode} />
-      </i>
+      </Icon>
       <div className="toggle-mode">
         <i
           className={`${mode === "light" ? "far fa-sun" : "fas fa-moon"} mode`}
@@ -67,3 +68,10 @@ function NavBar({
 }
 
 export default NavBar;
+
+const Icon = styled.i`
+  &::after {
+    display: ${(props) =>
+      props["data-notifs-count"] ? "inline-block" : "none"};
+  }
+`;

@@ -19,6 +19,8 @@ export const ModeContext = React.createContext("");
 class App extends Component {
   constructor() {
     super();
+
+    this.h1Ref = React.createRef();
     this.state = {
       monsters: [],
       searchField: "",
@@ -52,6 +54,10 @@ class App extends Component {
       );
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    window.localStorage.setItem("favs", `[${this.state.favourites}]`);
+  }
+
   handleChange = (e) => {
     this.setState({ searchField: e.target.value });
   };
@@ -62,12 +68,7 @@ class App extends Component {
     } else if (ev.target.className.includes("fa-bookmark")) {
       this.setState((prevState) => prevState.recent.push(id));
       if (!this.state.favourites.includes(id)) {
-        this.setState(
-          (prevState) => prevState.favourites.push(id),
-          () => {
-            window.localStorage.setItem("favs", `[${this.state.favourites}]`);
-          }
-        );
+        this.setState((prevState) => prevState.favourites.push(id));
         this.setState((prevState) =>
           prevState.notifications.push({ id, type: "added" })
         );
@@ -79,7 +80,6 @@ class App extends Component {
               1
             ),
           () => {
-            window.localStorage.setItem("favs", `[${this.state.favourites}]`);
             return this.state.favourites.length
               ? null
               : this.setState({ showFavs: false });
@@ -135,6 +135,7 @@ class App extends Component {
       clickedImg,
       mode,
     } = this.state;
+    // console.log(this.h1Ref.current);
     switch (sortBy) {
       case "a-z":
         monsters = monsters.sort((a, b) =>
@@ -180,7 +181,7 @@ class App extends Component {
               toggleMode={this.toggleMode}
             />
           </NotifsContext.Provider>
-          <h1>Monster Rolodex</h1>
+          <h1 ref={this.h1Ref}>Monster Rolodex</h1>
           <SearchBox
             placeholder="Search Monster"
             handleChange={this.handleChange}
