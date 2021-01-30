@@ -11,11 +11,6 @@ export const CardList = ({ myFav, monsters, clicked }) => {
   return (location.pathname === "/Favourites" && myFav.length) ||
     location.pathname !== "/Favourites" ? (
     <div className="card-list">
-      {/* {monsters.map((monster) => (
-        <Route key={monster.id} path={`/Monsters/${monster.id}`}>
-          <FullCardInfo monster={monster} />
-        </Route>
-      ))} */}
       {showDetails
         ? [
             <h2 key="h1" className="close" onClick={() => setShowDetails(0)}>

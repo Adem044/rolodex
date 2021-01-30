@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import "./navBar.css";
+import { Trail } from "react-spring/renderprops";
+
 import Notifications from "../notifications/Notifications";
 
 function NavBar({
@@ -30,21 +32,27 @@ function NavBar({
   const navBarClassName = mode === "light" ? "nav-bar" : "nav-bar dark";
   return (
     <div className={navBarClassName}>
-      {navItems.map((navItem, id) => {
-        return (
+      <Trail
+        items={navItems}
+        from={{ opacity: 0, fontSize: "20px" }}
+        to={{ opacity: 1, fontSize: "25px" }}
+        config={{ delay: 500 }}
+      >
+        {(item, id) => (props) => (
           <Link
-            className={active === navItem ? "active" : null}
-            to={`/${navItem}`}
+            className={active === item ? "active" : null}
+            style={props}
+            to={`/${item}`}
             onClick={() => {
               clicked(id);
-              setActive(navItem);
+              setActive(item);
             }}
             key={id}
           >
-            {navItem}
+            {item}
           </Link>
-        );
-      })}
+        )}
+      </Trail>
       <Icon
         data-notifs-count={recentNotif.length}
         className={`${!recentNotif.length ? "far" : "fas"} fa-bell`}
@@ -75,3 +83,21 @@ const Icon = styled.i`
       props["data-notifs-count"] ? "inline-block" : "none"};
   }
 `;
+
+// {
+//   navItems.map((navItem, id) => {
+//     return (
+//       <Link
+//         className={active === navItem ? "active" : null}
+//         to={`/${navItem}`}
+//         onClick={() => {
+//           clicked(id);
+//           setActive(navItem);
+//         }}
+//         key={id}
+//       >
+//         {navItem}
+//       </Link>
+//     );
+//   });
+// }

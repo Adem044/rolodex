@@ -14,10 +14,6 @@
   position: relative;
 }
 
-.dark-card {
-  background-color: rgb(110, 110, 110);
-  border: 1px solid #95dada;
-}
 .dark-card p,
 .dark-card h2 {
   color: white;
@@ -31,10 +27,6 @@
   transform: scale(1.01);
 }
 
-.padding-added {
-  padding: 0 27px;
-}
-
 .card-container i {
   position: absolute;
   top: 5px;
@@ -45,4 +37,9 @@
 .card-container i:hover {
   transform: scale(1.1);
   color: tomato;
+}
+
+.card-container img {
+  height: 180px;
+  width: 180px;
 }
