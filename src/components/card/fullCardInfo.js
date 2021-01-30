@@ -15,9 +15,11 @@ const FullCardInfo = ({ monster }) => {
         .then((response) => {
           return response.json();
         })
-        .then((user) => updateMonsters(user.find((mon) => mon.id == Id)));
+        .then((user) =>
+          updateMonsters(user.find((mon) => mon.id === Number(Id)))
+        );
     }
-  }, []);
+  }, [Id]);
 
   const arr = Object.entries(Id && monsters ? monsters : monster);
   const filteredArr = arr.filter((arr) => {
