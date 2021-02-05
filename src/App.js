@@ -8,6 +8,7 @@ import FullCardInfo from "./components/card/fullCardInfo";
 import { SearchBox } from "./components/search-box/search-box";
 import DropDownMenu from "./components/dropDownMenu/dropDownMenu";
 import "./App.css";
+import PopUp from "./components/notifications/PopUp";
 
 export const NotifsContext = React.createContext({
   added: [],
@@ -54,7 +55,7 @@ class App extends Component {
       );
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     window.localStorage.setItem("favs", `[${this.state.favourites}]`);
   }
 
@@ -66,12 +67,18 @@ class App extends Component {
     if (ev.target.tagName === "IMG") {
       this.setState({ showFull: true, clickedImg: id });
     } else if (ev.target.className.includes("fa-bookmark")) {
-      this.setState((prevState) => prevState.recent.push(id));
+      this.setState((prev) => {
+        return {
+          recent: [...prev.recent, id],
+        };
+      });
       if (!this.state.favourites.includes(id)) {
-        this.setState((prevState) => prevState.favourites.push(id));
-        this.setState((prevState) =>
-          prevState.notifications.push({ id, type: "added" })
-        );
+        this.setState((prev) => {
+          return {
+            favourites: [...prev.favourites, id],
+            notifications: [...prev.notifications, { id, type: "added" }],
+          };
+        });
       } else {
         this.setState(
           (prevState) =>
@@ -85,9 +92,14 @@ class App extends Component {
               : this.setState({ showFavs: false });
           }
         );
-        this.setState((prevState) =>
-          prevState.notifications.push({ id, type: "removed" })
-        );
+        this.setState((prevState) => {
+          return {
+            notifications: [
+              ...prevState.notifications,
+              { id, type: "removed" },
+            ],
+          };
+        });
       }
     }
   };
@@ -135,7 +147,6 @@ class App extends Component {
       clickedImg,
       mode,
     } = this.state;
-    // console.log(this.h1Ref.current);
     switch (sortBy) {
       case "a-z":
         monsters = monsters.sort((a, b) =>
@@ -170,6 +181,7 @@ class App extends Component {
           {this.state.showFull && (
             <FullSize closeFull={this.closeFull} clickedImg={clickedImg} />
           )}
+          <PopUp showPopUp={favourites.length} />
           <NotifsContext.Provider value={{ added: notifs, showDrop }}>
             <NavBar
               navItems={["Monsters", "Favourites"]}

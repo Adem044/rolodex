@@ -83,21 +83,3 @@ const Icon = styled.i`
       props["data-notifs-count"] ? "inline-block" : "none"};
   }
 `;
-
-// {
-//   navItems.map((navItem, id) => {
-//     return (
-//       <Link
-//         className={active === navItem ? "active" : null}
-//         to={`/${navItem}`}
-//         onClick={() => {
-//           clicked(id);
-//           setActive(navItem);
-//         }}
-//         key={id}
-//       >
-//         {navItem}
-//       </Link>
-//     );
-//   });
-// }
